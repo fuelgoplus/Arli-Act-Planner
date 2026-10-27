@@ -1,0 +1,7 @@
+{
+  "name": "EventFlow - Welfare Activity Organizer & Task Planner",
+  "description": "Enterprise activity planning organizer with phase checklists, role-based editing authorizations, real-time stakeholder notifications, and Google Docs export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
