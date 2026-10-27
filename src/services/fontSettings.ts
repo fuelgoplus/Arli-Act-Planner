@@ -119,11 +119,73 @@ export const applyFontSettings = (settings: FontSettings) => {
   const font = CHIC_FONT_OPTIONS.find(f => f.id === settings.selectedFontId) || CHIC_FONT_OPTIONS[0];
   
   if (typeof document !== 'undefined') {
+    const isAll = settings.applyToAll !== false;
+    const bodyFont = isAll
+      ? font.family
+      : "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+    // Set CSS custom properties on root
     document.documentElement.style.setProperty('--app-title-font', font.family);
-    if (settings.applyToAll) {
-      document.documentElement.style.setProperty('--app-body-font', font.family);
+    document.documentElement.style.setProperty('--app-body-font', bodyFont);
+    
+    if (document.body) {
+      document.body.style.fontFamily = bodyFont;
+    }
+
+    // Dynamic style tag injection to override any nested class or element-level resets
+    let styleEl = document.getElementById('app-dynamic-typography') as HTMLStyleElement | null;
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'app-dynamic-typography';
+      document.head.appendChild(styleEl);
+    }
+
+    if (isAll) {
+      styleEl.textContent = `
+        :root {
+          --app-title-font: ${font.family};
+          --app-body-font: ${font.family};
+        }
+        html,
+        body,
+        #root,
+        #root input,
+        #root button,
+        #root select,
+        #root textarea,
+        #root table,
+        #root th,
+        #root td,
+        #root h1,
+        #root h2,
+        #root h3,
+        #root h4,
+        #root h5,
+        #root h6,
+        #root p,
+        #root span:not(.font-mono):not([class*="font-mono"]) {
+          font-family: ${font.family} !important;
+        }
+        .font-app-title {
+          font-family: ${font.family} !important;
+        }
+        .font-mono, [class*="font-mono"], code, pre, kbd {
+          font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        }
+      `;
     } else {
-      document.documentElement.style.setProperty('--app-body-font', "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif");
+      styleEl.textContent = `
+        :root {
+          --app-title-font: ${font.family};
+          --app-body-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .font-app-title {
+          font-family: ${font.family} !important;
+        }
+        .font-mono, [class*="font-mono"], code, pre, kbd {
+          font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        }
+      `;
     }
   }
   
@@ -133,3 +195,9 @@ export const applyFontSettings = (settings: FontSettings) => {
     console.error('Error saving font settings:', e);
   }
 };
+
+// Immediate execution on module evaluation in browser
+if (typeof window !== 'undefined') {
+  applyFontSettings(loadStoredFontSettings());
+}
+

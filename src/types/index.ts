@@ -27,6 +27,23 @@ export interface TaskItem {
   overrunRisk?: boolean;
 }
 
+export type PhaseLogCategory = 'milestone' | 'change_log' | 'decision' | 'issue' | 'meeting';
+
+export interface PhaseHistoryEntry {
+  id: string;
+  phaseId: string;
+  timestamp: string; // ISO string or 'YYYY-MM-DD HH:mm'
+  authorName: string;
+  authorEmail?: string;
+  authorRole?: string;
+  category: PhaseLogCategory;
+  title: string;
+  details: string;
+  impactLevel?: 'low' | 'medium' | 'high';
+  taskId?: string;
+  taskCode?: string;
+}
+
 export interface PhaseSection {
   id: string;
   order: number;
@@ -38,6 +55,7 @@ export interface PhaseSection {
   startDate?: string; // e.g. "2026-10-20"
   endDate?: string; // e.g. "2026-11-15"
   wrapUpNotes: string[];
+  historyLogs?: PhaseHistoryEntry[];
 }
 
 export interface TeamMember {

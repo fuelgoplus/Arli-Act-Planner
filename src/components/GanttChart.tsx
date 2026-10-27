@@ -30,17 +30,17 @@ export const GanttChart: React.FC<GanttChartProps> = ({
   const timelineEnd = new Date('2027-02-01').getTime();
   const totalDuration = timelineEnd - timelineStart;
 
-  // Major timeline markers (weeks / months)
+  // Major timeline markers (weeks / months) with clean calendar periods (no L-T data)
   const timelineMarkers = [
-    { label: '10月下旬', date: '2026-10-21', pos: 2 },
-    { label: '11月上旬 (D-4M)', date: '2026-11-01', pos: 12 },
-    { label: '11月中旬', date: '2026-11-15', pos: 25 },
-    { label: '12月上旬 (D-3M)', date: '2026-12-01', pos: 40 },
-    { label: '12月中旬', date: '2026-12-15', pos: 53 },
-    { label: '01月上旬 (D-2M)', date: '2027-01-01', pos: 69 },
-    { label: '01月中旬 (D-2W)', date: '2027-01-15', pos: 82 },
-    { label: '01/22 晚宴 D-Day', date: '2027-01-22', pos: 89, isDDay: true },
-    { label: '會後核銷', date: '2027-01-30', pos: 96 },
+    { label: '10月下旬 (10/21)', date: '2026-10-21', pos: 2 },
+    { label: '11月上旬 (11/01)', date: '2026-11-01', pos: 12 },
+    { label: '11月中旬 (11/15)', date: '2026-11-15', pos: 25 },
+    { label: '12月上旬 (12/01)', date: '2026-12-01', pos: 40 },
+    { label: '12月中旬 (12/15)', date: '2026-12-15', pos: 53 },
+    { label: '01月上旬 (01/01)', date: '2027-01-01', pos: 69 },
+    { label: '01月中旬 (01/15)', date: '2027-01-15', pos: 82 },
+    { label: `${plan.eventTargetDate ? plan.eventTargetDate.replace(/^202[0-9][.-]/, '') : '01/22'} 晚宴 D-Day`, date: plan.eventTargetDate || '2027-01-22', pos: 89, isDDay: true },
+    { label: '01月下旬 (01/30)', date: '2027-01-30', pos: 96 },
   ];
 
   const filteredPhases = selectedPhaseId === 'all'
@@ -145,46 +145,59 @@ export const GanttChart: React.FC<GanttChartProps> = ({
 
               return (
                 <div key={phase.id} className="space-y-2">
-                  {/* Phase Row Header */}
-                  <div className="flex items-center gap-2 bg-slate-100/70 px-3 py-1.5 rounded-lg border border-slate-200/80">
-                    <span className="text-xs font-bold text-indigo-700 font-mono">
-                      {phase.code}
-                    </span>
-                    <span className="text-xs font-bold text-slate-900">
-                      {phase.name}
-                    </span>
-                    <span className="text-[11px] text-slate-500">
-                      ({phaseTasks.length} 項工作)
-                    </span>
+                  {/* Phase Row Header with Execution Time Period */}
+                  <div className="flex items-center justify-between gap-3 bg-slate-100/80 px-3 py-1.5 rounded-lg border border-slate-200/80">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-indigo-700 font-mono">
+                        {phase.code}
+                      </span>
+                      <span className="text-xs font-bold text-slate-900">
+                        {phase.name}
+                      </span>
+                      <span className="text-[11px] text-slate-500">
+                        ({phaseTasks.length} 項工作)
+                      </span>
+                    </div>
+                    {phase.timePeriod && (
+                      <div className="flex items-center gap-1 text-[11px] font-mono text-indigo-700 bg-white border border-indigo-200/80 px-2 py-0.5 rounded shadow-2xs">
+                        <Clock className="w-3 h-3 text-indigo-600 shrink-0" />
+                        <span>階段時程：{phase.timePeriod}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Task Timeline Rows */}
-                  <div className="space-y-1.5 pl-2">
+                  <div className="space-y-1.5 pl-1 sm:pl-2">
                     {phaseTasks.map((task) => {
                       const pos = calculateBarPosition(task);
                       const colors = getGroupColor(task.group);
                       const isCompleted = task.status === 'completed';
+                      const formattedPeriod = task.timePeriod || (task.startDate && task.targetDate ? `${task.startDate.slice(5)} - ${task.targetDate.slice(5)}` : '時程待定');
 
                       return (
                         <div
                           key={task.id}
                           className="flex items-center gap-3 py-1 group hover:bg-slate-50/80 rounded px-1 transition-colors"
                         >
-                          {/* Task Label on Left */}
-                          <div className="w-64 shrink-0 flex items-center justify-between text-xs pr-2">
-                            <div className="truncate pr-1">
+                          {/* Task Label & Time Period on Left (No L-T data) */}
+                          <div className="w-72 sm:w-80 shrink-0 flex items-center justify-between text-xs pr-3">
+                            <div className="truncate pr-2">
                               <span className="font-mono font-bold text-indigo-700 mr-1.5">
                                 {task.code}
                               </span>
                               <span
                                 className="font-medium text-slate-800 hover:text-indigo-600 cursor-pointer"
                                 onClick={() => onEditTask?.(task)}
+                                title={task.title}
                               >
                                 {task.title}
                               </span>
                             </div>
-                            <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-1 py-0.2 rounded shrink-0">
-                              {task.timePeriod || task.leadTime}
+                            <span
+                              className="text-[10px] font-mono font-semibold text-indigo-800 bg-indigo-50 border border-indigo-200/70 px-1.5 py-0.5 rounded shrink-0 shadow-2xs"
+                              title="執行時程期間 (Time Period)"
+                            >
+                              {formattedPeriod}
                             </span>
                           </div>
 
@@ -194,12 +207,13 @@ export const GanttChart: React.FC<GanttChartProps> = ({
                             <div
                               className="absolute top-0 bottom-0 w-px bg-amber-400 z-10 pointer-events-none"
                               style={{ left: '89%' }}
+                              title={`晚宴 D-Day 基準線 (${plan.eventTargetDate || '2027.01.22'})`}
                             />
 
                             {/* The Gantt Task Bar */}
                             <div
                               onClick={() => onEditTask?.(task)}
-                              title={`${task.code} ${task.title}\n時程：${task.timePeriod || task.targetDate}\n負責人：${task.assignee} (${task.group}組)\n狀態：${task.status}`}
+                              title={`${task.code} ${task.title}\n時程期間：${formattedPeriod}\n交付項目：${task.deliverables}\n負責人：${task.assignee} (${task.group}組)\n狀態：${task.status === 'completed' ? '已完成' : task.status === 'in_progress' ? '進行中' : task.status}`}
                               style={{ left: pos.left, width: pos.width }}
                               className={`absolute h-5 rounded-md px-2 flex items-center justify-between text-[10px] font-medium transition-all shadow-2xs hover:shadow-xs cursor-pointer select-none truncate ${
                                 isCompleted
@@ -207,7 +221,14 @@ export const GanttChart: React.FC<GanttChartProps> = ({
                                   : colors.bar
                               }`}
                             >
-                              <span className="truncate pr-1">{task.deliverables}</span>
+                              <div className="truncate pr-1.5 flex items-center gap-1.5">
+                                <span className="truncate">{task.deliverables}</span>
+                                {task.timePeriod && (
+                                  <span className="opacity-90 font-mono text-[9px] bg-black/15 px-1 rounded hidden lg:inline">
+                                    {task.timePeriod}
+                                  </span>
+                                )}
+                              </div>
                               <span className="shrink-0 text-[9px] opacity-90 font-mono">
                                 {task.assignee}
                               </span>
@@ -242,8 +263,8 @@ export const GanttChart: React.FC<GanttChartProps> = ({
               </span>
             </div>
 
-            <div className="font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
-              ★ 基準晚宴日：2027.01.22 (D-Day)
+            <div className="font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded">
+              ★ 基準晚宴日：{plan.eventTargetDate || '2027.01.22'} (D-Day)
             </div>
           </div>
         </div>

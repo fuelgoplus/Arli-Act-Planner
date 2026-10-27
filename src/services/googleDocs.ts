@@ -55,8 +55,11 @@ export const buildPlanDocumentContent = (plan: ActivityPlan): string => {
   plan.phases.forEach(phase => {
     content += `=== [${phase.code}] ${phase.name} (${phase.subtitle}) ===\n`;
     content += `階段目標：${phase.description}\n`;
+    if (phase.timePeriod) {
+      content += `執行時程：${phase.timePeriod}\n`;
+    }
     content += subDivider;
-    content += `代號 | 時限(L-T) | 組別 | 負責人 | 交付項目 | 狀態 | 檢核工作名稱\n`;
+    content += `代號 | 時限/期間 | 組別 | 負責人 | 交付項目 | 狀態 | 檢核工作名稱\n`;
     content += subDivider;
 
     const phaseTasks = plan.tasks.filter(t => t.phaseId === phase.id);
@@ -67,8 +70,16 @@ export const buildPlanDocumentContent = (plan: ActivityPlan): string => {
         task.status === 'under_review' ? '[審核中]' :
         task.status === 'blocked' ? '[遇阻礙]' : '[待啟動]';
 
-      content += `${task.code.padEnd(5)} | ${(task.leadTime || '-').padEnd(8)} | ${task.group.padEnd(4)} | ${task.assignee.padEnd(5)} | ${task.deliverables.padEnd(16)} | ${statusLabel} | ${task.title}\n`;
+      const period = task.timePeriod || task.leadTime || '-';
+      content += `${task.code.padEnd(5)} | ${period.padEnd(14)} | ${task.group.padEnd(4)} | ${task.assignee.padEnd(5)} | ${task.deliverables.padEnd(16)} | ${statusLabel} | ${task.title}\n`;
     });
+
+    if (phase.historyLogs && phase.historyLogs.length > 0) {
+      content += `\n【${phase.code} 歷程與變更紀錄 (Tracker)】:\n`;
+      phase.historyLogs.forEach((log, idx) => {
+        content += `  ${idx + 1}. [${log.category}] ${log.title} (${log.timestamp} by ${log.authorName})\n     ${log.details}\n`;
+      });
+    }
 
     if (phase.wrapUpNotes && phase.wrapUpNotes.length > 0) {
       content += `\n【${phase.code} 結案檢核重點 (Wrap-up)】:\n`;

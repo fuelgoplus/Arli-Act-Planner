@@ -136,6 +136,56 @@ export const INITIAL_ACTIVITY_PLAN: ActivityPlan = {
         'Get aligned with top management on timeline, format, and preliminary budget plan.',
         'Draft task assignment, grouping, and Target event date (D date) schedule.',
         '主委與財務委員完成第一版年度各活動預算上限設定。'
+      ],
+      historyLogs: [
+        {
+          id: 'log-1-1',
+          phaseId: 'phase-1',
+          timestamp: '2026-10-21 10:30',
+          authorName: 'Bear (主委)',
+          authorRole: 'chairperson',
+          category: 'milestone',
+          title: '總體年度籌劃與預算編列初稿完成',
+          details: '確立尾牙年度總體規劃方向，依五階段時程建立任務分工與責任人指派。',
+          impactLevel: 'high',
+          taskId: 'task-1',
+          taskCode: 'O.O'
+        },
+        {
+          id: 'log-1-2',
+          phaseId: 'phase-1',
+          timestamp: '2026-10-21 14:00',
+          authorName: 'Bear (主委)',
+          authorRole: 'chairperson',
+          category: 'decision',
+          title: '拍板尾牙晚宴目標日為 2027.01.22 (週五)',
+          details: '經福委會幹部初選會議決議，配合同仁與高層行事曆，定案 D-Day 為 2027.01.22。',
+          impactLevel: 'high'
+        },
+        {
+          id: 'log-1-3',
+          phaseId: 'phase-1',
+          timestamp: '2026-10-22 16:20',
+          authorName: 'Amos (財委)',
+          authorRole: 'committee_member',
+          category: 'change_log',
+          title: '修訂年度活動預算框架佔比',
+          details: '依福利金預估總額，調升尾牙晚宴預算至 40% (NT$ 2,000,000)，預備金維持 10%。',
+          impactLevel: 'medium'
+        },
+        {
+          id: 'log-1-4',
+          phaseId: 'phase-1',
+          timestamp: '2026-10-24 11:00',
+          authorName: 'Philip Chang',
+          authorRole: 'super_admin',
+          category: 'meeting',
+          title: '與經營層 (TOP Jett) 初始意向對齊會議',
+          details: '掌握管理層對本屆尾牙活動之核心風格期望，提報初版時程檢核表獲原則性同意。',
+          impactLevel: 'medium',
+          taskId: 'task-2',
+          taskCode: '托夢'
+        }
       ]
     },
     {
@@ -153,6 +203,32 @@ export const INITIAL_ACTIVITY_PLAN: ActivityPlan = {
         'Finalize "Theme, Tagline" for this Annual Party.',
         'Revision of annual party rundown (V1.x).',
         'Venue contracts must consider liabilities caused by force majeure (不可抗力事件).'
+      ],
+      historyLogs: [
+        {
+          id: 'log-2-1',
+          phaseId: 'phase-2',
+          timestamp: '2026-11-05 14:30',
+          authorName: 'Ann',
+          authorRole: 'committee_member',
+          category: 'change_log',
+          title: '場勘名單新增大直萬豪與喜來登並更新比價清單',
+          details: '總務組擴大場勘對象以利性價比與動線評估，預計於 11/15 前完成現場動線量測。',
+          impactLevel: 'medium',
+          taskId: 'task-8',
+          taskCode: 'A.3'
+        },
+        {
+          id: 'log-2-2',
+          phaseId: 'phase-2',
+          timestamp: '2026-11-12 11:15',
+          authorName: 'Bear (主委)',
+          authorRole: 'chairperson',
+          category: 'decision',
+          title: '場地合約必須包含非可抗力因素免責與訂金保留條款',
+          details: '防範天候或公衛突發情況，法律條款由法務審核確認後方可簽署。',
+          impactLevel: 'high'
+        }
       ]
     },
     {
@@ -168,6 +244,32 @@ export const INITIAL_ACTIVITY_PLAN: ActivityPlan = {
       wrapUpNotes: [
         'Revision of Rundown is 1st priority. Sync up rundown_V2 with TOP (Jett).',
         '規劃通知（主題裝扮作業要點、報名表、外部邀請函、贊助文案）耗時較長，督促活動組儘早完成。'
+      ],
+      historyLogs: [
+        {
+          id: 'log-3-1',
+          phaseId: 'phase-3',
+          timestamp: '2026-12-05 09:30',
+          authorName: 'Amos (財委)',
+          authorRole: 'committee_member',
+          category: 'milestone',
+          title: '尾牙摸彩獎品與獎金級距草案制定',
+          details: '編列特獎、頭獎至普獎之分配比例，提送常務委員會討論核備。',
+          impactLevel: 'medium',
+          taskId: 'task-17',
+          taskCode: 'B.5'
+        },
+        {
+          id: 'log-3-2',
+          phaseId: 'phase-3',
+          timestamp: '2026-12-15 15:00',
+          authorName: 'Philip Chang',
+          authorRole: 'super_admin',
+          category: 'issue',
+          title: '外部樂團報價超過原編列預算 15%，需召開比價協調會議',
+          details: '已請活動組接洽第二備選樂團，並請財委評估動用預備金或精簡節目之可行性。',
+          impactLevel: 'high'
+        }
       ]
     },
     {
@@ -183,6 +285,19 @@ export const INITIAL_ACTIVITY_PLAN: ActivityPlan = {
       wrapUpNotes: [
         '主委必定要仔細核對流程活動表 V3 與現場分工。',
         '緊急應變：模擬氣候、系統性意外、非可抗力因素影響晚會舉辦，確認延期或取消之清償責任。'
+      ],
+      historyLogs: [
+        {
+          id: 'log-4-1',
+          phaseId: 'phase-4',
+          timestamp: '2027-01-10 16:00',
+          authorName: '全體委員',
+          authorRole: 'committee_member',
+          category: 'meeting',
+          title: '全體跨組彩排前置推演與應變演練',
+          details: '針對停電、麥克風故障、頒獎進度落後等各項異常情境訂立應變 SOP。',
+          impactLevel: 'medium'
+        }
       ]
     },
     {
@@ -199,6 +314,19 @@ export const INITIAL_ACTIVITY_PLAN: ActivityPlan = {
         '晚會當日執行紀錄與現場機動調度。',
         '會後 1 週內完成核銷憑證、扣繳憑單與費用結算。',
         '滿意度問卷回收並召開檢討會議，呈核正式結案報告。'
+      ],
+      historyLogs: [
+        {
+          id: 'log-5-1',
+          phaseId: 'phase-5',
+          timestamp: '2027-01-18 10:00',
+          authorName: 'Amos (財委)',
+          authorRole: 'committee_member',
+          category: 'decision',
+          title: '中獎人扣繳憑單統一由財務委員會於會後三日內造冊呈送',
+          details: '依所得稅法規定辦理各類所得扣繳申報，獎項超過 NT$ 20,000 需代扣 10% 稅款。',
+          impactLevel: 'high'
+        }
       ]
     }
   ],

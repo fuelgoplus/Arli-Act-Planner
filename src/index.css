@@ -1,18 +1,34 @@
 @import "tailwindcss";
 
-:root {
-  --app-title-font: 'Google Sans Flex', 'Google Sans', 'Plus Jakarta Sans', sans-serif;
-  --app-body-font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+@theme {
+  --font-sans: var(--app-body-font);
 }
 
-@layer base {
-  body {
-    font-family: var(--app-body-font);
-  }
+:root {
+  --app-title-font: 'Google Sans Flex', 'Google Sans', 'Plus Jakarta Sans', sans-serif;
+  --app-body-font: 'Google Sans Flex', 'Google Sans', 'Plus Jakarta Sans', sans-serif;
+}
+
+html,
+body,
+#root {
+  font-family: var(--app-body-font);
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
 }
 
 .font-app-title {
-  font-family: var(--app-title-font);
+  font-family: var(--app-title-font) !important;
+}
+
+.font-app-body {
+  font-family: var(--app-body-font) !important;
 }
 
 .font-tabular {

@@ -8,6 +8,7 @@ import {
   CommitteeGroup,
   TaskStatus,
   UserRole,
+  PhaseHistoryEntry,
 } from '../types';
 import { INITIAL_ACTIVITY_PLAN } from '../data/initialData';
 import { loadStoredMembers, saveStoredMembers } from '../services/auth';
@@ -46,8 +47,11 @@ interface AppContextType {
   updateTaskStatus: (taskId: string, status: TaskStatus) => void;
   updateTask: (task: TaskItem) => void;
   updatePhase: (phaseId: string, updates: Partial<PhaseSection>) => void;
+  updateEventTargetDate: (newDDay: string) => void;
   addTask: (task: Omit<TaskItem, 'id'>) => void;
   deleteTask: (taskId: string) => void;
+  addPhaseLogEntry: (phaseId: string, entry: Omit<PhaseHistoryEntry, 'id' | 'timestamp'> & { timestamp?: string }) => void;
+  deletePhaseLogEntry: (phaseId: string, logId: string) => void;
   resetToInitialPlan: () => void;
 
   // Budget & Decision
@@ -87,6 +91,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               timePeriod: p.timePeriod || initialMatch?.timePeriod || '',
               startDate: p.startDate || initialMatch?.startDate,
               endDate: p.endDate || initialMatch?.endDate,
+              historyLogs: p.historyLogs && p.historyLogs.length > 0 ? p.historyLogs : (initialMatch?.historyLogs || []),
             };
           });
         }
@@ -244,6 +249,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   }, [currentUser, plan.phases, triggerNotification]);
 
+  const updateEventTargetDate = useCallback((newDDay: string) => {
+    if (!currentUser.canEdit) {
+      alert('您的帳號為「唯讀模式」，僅授權委員可設定晚會目標日。');
+      return;
+    }
+
+    setPlan(prev => ({
+      ...prev,
+      eventTargetDate: newDDay,
+    }));
+
+    triggerNotification(
+      `晚會目標日 (D-Day) 設定已更新`,
+      `${currentUser.name} 已將晚會目標基準日 (D-Day) 更新為「${newDDay}」。`,
+      '全體委員',
+      'status_update'
+    );
+  }, [currentUser, triggerNotification]);
+
   const addTask = useCallback((taskData: Omit<TaskItem, 'id'>) => {
     if (!currentUser.canEdit) {
       alert('您的帳號為「唯讀模式」，無新增任務權限。');
@@ -290,6 +314,81 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       'status_update'
     );
   }, [currentUser, plan.tasks, triggerNotification]);
+
+  const addPhaseLogEntry = useCallback((
+    phaseId: string,
+    entry: Omit<PhaseHistoryEntry, 'id' | 'timestamp'> & { timestamp?: string }
+  ) => {
+    if (!currentUser.canEdit) {
+      alert('您的帳號為「唯讀模式」，僅授權委員可新增活動歷程與變更紀錄。');
+      return;
+    }
+
+    const newLog: PhaseHistoryEntry = {
+      ...entry,
+      id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      phaseId,
+      timestamp: entry.timestamp || new Date().toISOString().replace('T', ' ').substring(0, 16),
+      authorName: entry.authorName || currentUser.name,
+      authorRole: entry.authorRole || currentUser.role,
+      authorEmail: entry.authorEmail || currentUser.email,
+    };
+
+    setPlan(prev => {
+      const updatedPhases = prev.phases.map(p => {
+        if (p.id === phaseId) {
+          const currentLogs = p.historyLogs || [];
+          return {
+            ...p,
+            historyLogs: [newLog, ...currentLogs],
+          };
+        }
+        return p;
+      });
+      return {
+        ...prev,
+        phases: updatedPhases,
+      };
+    });
+
+    const targetPhase = plan.phases.find(p => p.id === phaseId);
+    triggerNotification(
+      `階段歷程紀錄 [${targetPhase?.code || ''}]：${newLog.title}`,
+      `${currentUser.name} 於 ${targetPhase?.name || '此階段'} 登記了新事件/變更：「${newLog.title}」`,
+      '全體委員',
+      'status_update'
+    );
+  }, [currentUser, plan.phases, triggerNotification]);
+
+  const deletePhaseLogEntry = useCallback((phaseId: string, logId: string) => {
+    if (!currentUser.canEdit) {
+      alert('您的帳號為「唯讀模式」，無刪除紀錄權限。');
+      return;
+    }
+
+    setPlan(prev => {
+      const updatedPhases = prev.phases.map(p => {
+        if (p.id === phaseId) {
+          return {
+            ...p,
+            historyLogs: (p.historyLogs || []).filter(l => l.id !== logId),
+          };
+        }
+        return p;
+      });
+      return {
+        ...prev,
+        phases: updatedPhases,
+      };
+    });
+
+    triggerNotification(
+      `歷程紀錄已移除`,
+      `${currentUser.name} 移除了階段中的一筆歷程變更記錄。`,
+      '全體委員',
+      'status_update'
+    );
+  }, [currentUser, triggerNotification]);
 
   const resetToInitialPlan = useCallback(() => {
     setPlan(INITIAL_ACTIVITY_PLAN);
@@ -589,8 +688,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updateTaskStatus,
         updateTask,
         updatePhase,
+        updateEventTargetDate,
         addTask,
         deleteTask,
+        addPhaseLogEntry,
+        deletePhaseLogEntry,
         resetToInitialPlan,
         submitChangeRequest,
         reviewChangeRequest,
